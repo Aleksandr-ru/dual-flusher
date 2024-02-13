@@ -1,3 +1,7 @@
+// Plants waterer (dual flusher)
+// Copyright (c) 2024 Aleksandr.ru
+// @see http://aleksandr.ru
+//
 // +-----------------------+
 // | Энкодер               |
 // +-----------------------+
@@ -18,7 +22,7 @@
 // +-----------------------+
 // | Реле: D5, D6          |
 // +-----------------------+
-
+//
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 #include <Fonts/FreeSansBold9pt7b.h>
@@ -31,7 +35,7 @@
 
 #include <EEPROM.h>
 
-//#define DEBUG 115200
+// #define DEBUG 115200
 
 #define ENCODER_S1  2
 #define ENCODER_S2  3
@@ -431,18 +435,18 @@ void drawStatus() {
 void drawStatusLine(byte line, int dy, byte p, byte minP, unsigned long sec) {
   dy += (line - 1) * -32;
   display.setTextSize(3);
-  display.setCursor(0, 3 - dy);
+  display.setCursor(0, 7 - dy);
   if (p < 10) display.print(" ");
   display.print(p);
   display.setTextSize(1);
-  display.setCursor(36, 3 - dy);
+  display.setCursor(36, 7 - dy);
   display.print("% ");
   byte k = min(max(((int)p - (int)minP) / 10, 1), 3);
   for(byte i=0; i<k; i++) display.write(0xAF);
   display.print(" ");
   display.print(minP);
   display.print("%");
-  display.setCursor(38, 18 - dy);
+  display.setCursor(38, 22 - dy);
   display.print(format_seconds(sec));
 }
 
@@ -472,16 +476,15 @@ String format_seconds(unsigned long sec) {
 byte measure1() {
   static unsigned long oldTime = 0;
   static byte oldVal = 0;
-  if (!oldVal || millis() - oldTime > MEASURE_DEBOUNCE) {
+  if (!oldVal || millis() - oldTime > MEASURE_DEBOUNCE) {    
     int value = analogRead(SENSOR1);
     #ifdef DEBUG
     Serial.print("Measure #1: "); 
     Serial.println(value);
     #endif
-
-    oldVal = 100 - map(value, SENSOR_MIN, SENSOR_MAX, 1, 99);
-    if (oldVal > 99) oldVal = 99;
+    
     oldTime = millis();
+    oldVal = scaleValue(value);
   }
   return oldVal;
 }
@@ -489,16 +492,21 @@ byte measure1() {
 byte measure2() {
   static unsigned long oldTime = 0;
   static byte oldVal = 0;
-  if (!oldVal || millis() - oldTime > MEASURE_DEBOUNCE) {
+  if (!oldVal || millis() - oldTime > MEASURE_DEBOUNCE) {    
     int value = analogRead(SENSOR2);
     #ifdef DEBUG
     Serial.print("Measure #2: "); 
     Serial.println(value);
     #endif
-
-    oldVal = 100 - map(value, SENSOR_MIN, SENSOR_MAX, 1, 99);
-    if (oldVal > 99) oldVal = 99;
+    
     oldTime = millis();
+    oldVal = scaleValue(value);
   }
   return oldVal;
+}
+
+byte scaleValue(int value) {
+  byte ret = 100 - map(value, SENSOR_MIN, SENSOR_MAX, 1, 99);
+  if (ret > 99) ret = 99;
+  return ret;
 }
