@@ -2,6 +2,8 @@
 
 Source code for the DIY Arduino-based device described in [this blog post](https://aleksandr.ru/blog/domashnyaya_polivalka_rasteniy).
 
+![dual flusher](https://raw.githubusercontent.com/Aleksandr-ru/dual-flusher/master/images/20240212_164629.gif)
+
 Hardware:
 
 * LGT8F328P or Arduino Nano
