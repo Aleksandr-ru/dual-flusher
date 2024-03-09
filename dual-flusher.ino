@@ -272,7 +272,7 @@ void loop() {
           break;
       }
 
-      if (millis() - actionStart > 1000 * sec) {
+      if (millis() - actionStart > 1000 * (unsigned long)sec) {
         digitalWrite(RELAY1, HIGH);
         digitalWrite(RELAY2, HIGH);
         mode = MODE_STATUS;
@@ -372,7 +372,7 @@ void drawAction() {
       sec = menuValues[MENU_TIME2];
       break;
   }
-  int w = map(millis(), actionStart, actionStart + 1000 * sec, 1, 127);
+  int w = map(millis(), actionStart, actionStart + 1000 * (unsigned long)sec, 1, 127);
   display.fillRect(0, 0, w, 31, WHITE);
 
   if (w > 64) {
